@@ -1,17 +1,18 @@
-mod day_1;
-mod day_2;
-mod day_3;
-mod day_4;
-mod day_5;
-mod day_6;
+mod day_01;
+mod day_02;
+mod day_03;
+mod day_04;
+mod day_05;
+mod day_06;
 mod solution;
+mod trailing;
 
-use day_1::Day1;
-use day_2::Day2;
-use day_3::Day3;
-use day_4::Day4;
-use day_5::Day5;
-use day_6::Day6;
+use day_01::Day1;
+use day_02::Day2;
+use day_03::Day3;
+use day_04::Day4;
+use day_05::Day5;
+use day_06::Day6;
 use solution::Solution;
 
 use std::fs;

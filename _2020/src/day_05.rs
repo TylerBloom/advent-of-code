@@ -1,4 +1,5 @@
 pub use crate::solution::Solution;
+pub use crate::trailing::TrailingIterator;
 
 fn get_id(row: String, col: String) -> u64 {
     row.chars()
@@ -39,16 +40,12 @@ impl Solution<u64> for Day5 {
     }
 
     fn solve_part_two(&self) -> u64 {
-        let mut digest: u64 = 0;
-        for (i, val) in self.data[1..].iter().enumerate() {
-            // We use data[i] as the enumeration starts AFTER we take a slice,
-            // mapping index 1 in data to 0
-            if val - self.data[i] == 2 {
-                digest = val - 1;
-                break;
-            }
-        }
-        digest
+        self.data
+            .iter()
+            .trailing()
+            .filter(|(&a, &b)| (a - b) == 2)
+            .map( |(a,_b)| a - 1 )
+            .collect::<Vec<u64>>()[0]
     }
 }
 

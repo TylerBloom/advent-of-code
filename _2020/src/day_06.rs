@@ -1,16 +1,16 @@
 pub use crate::solution::Solution;
 
 fn get_loose_count(val: String) -> u64 {
-    let parsed: Vec<String> = val.split("\n").map( |s| s.to_string()).collect();
+    let parsed: Vec<String> = val.split("\n").map(|s| s.to_string()).collect();
     ('a'..='z')
         .filter(|c| parsed.iter().any(|p| p.contains(&c.to_string())))
         .count() as u64
 }
 
 fn get_strict_count(val: String) -> u64 {
-    let parsed: Vec<String> = val.split("\n").map( |s| s.to_string()).collect();
+    let parsed: Vec<String> = val.split("\n").map(|s| s.to_string()).collect();
     ('a'..='z')
-        .filter(|c| parsed.iter().all(|p| p.contains(&c.to_string())) )
+        .filter(|c| parsed.iter().all(|p| p.contains(&c.to_string())))
         .count() as u64
 }
 
