@@ -12,7 +12,7 @@ where
     I: Iterator + Clone,
 {
     #[allow(dead_code)]
-    pub fn with_gap(mut self, count: usize ) -> Self {
+    pub fn with_gap(mut self, count: usize) -> Self {
         for _ in 1..count {
             self.first.next();
         }
