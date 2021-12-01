@@ -44,7 +44,7 @@ impl Solution<u64> for Day5 {
             // We use data[i] as the enumeration starts AFTER we take a slice,
             // mapping index 1 in data to 0
             if val - self.data[i] == 2 {
-                digest = val + 1;
+                digest = val - 1;
                 break;
             }
         }
