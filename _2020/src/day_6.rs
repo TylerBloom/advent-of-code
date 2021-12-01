@@ -1,43 +1,49 @@
 pub use crate::solution::Solution;
 
-fn get_count(val: String) -> u64 {
-    (b'a'..=b'z')
-        .map(|c| c as char)
-        .filter(|c| c.is_alphabetic())
-        .filter(|c| val.contains(&c.to_string()))
+fn get_loose_count(val: String) -> u64 {
+    let parsed: Vec<String> = val.split("\n").map( |s| s.to_string()).collect();
+    ('a'..='z')
+        .filter(|c| parsed.iter().any(|p| p.contains(&c.to_string())))
+        .count() as u64
+}
+
+fn get_strict_count(val: String) -> u64 {
+    let parsed: Vec<String> = val.split("\n").map( |s| s.to_string()).collect();
+    ('a'..='z')
+        .filter(|c| parsed.iter().all(|p| p.contains(&c.to_string())) )
         .count() as u64
 }
 
 pub struct Day6 {
-    data: Vec<u64>,
+    data: Vec<String>,
 }
 
 impl Solution<u64> for Day6 {
     fn parse_input(input: String) -> Self {
         let parsed: Vec<&str> = input.split("\n\n").collect();
-        let mut data: Vec<u64> = Vec::with_capacity(parsed.len());
+        let mut data: Vec<String> = Vec::with_capacity(parsed.len());
         for val in parsed {
             if !val.is_empty() {
-                data.push(get_count(val.to_string()));
+                data.push(val.to_string());
             }
         }
         Day6 { data }
     }
 
     fn solve_part_one(&self) -> u64 {
-        let mut digest: u64 = 0;
-        for val in &self.data {
-            digest += val;
-        }
-        digest
+        self.data
+            .iter()
+            .map(|p| get_loose_count(p.to_string()))
+            .reduce(|a, b| a + b)
+            .unwrap()
     }
 
     fn solve_part_two(&self) -> u64 {
-        let mut digest: u64 = 0;
-        for val in &self.data {
-            digest += val;
-        }
-        digest
+        self.data
+            .iter()
+            .map(|p| get_strict_count(p.to_string()))
+            .reduce(|a, b| a + b)
+            .unwrap()
     }
 }
 
@@ -51,5 +57,12 @@ mod tests {
         let input = String::from("abc\n\na\nb\nc\n\nab\nac\n\na\na\na\na\n\nb");
         let solver = Day6::parse_input(input);
         assert_eq!(solver.solve_part_one(), 11);
+    }
+
+    #[test]
+    fn test_part_two() {
+        let input = String::from("abc\n\na\nb\nc\n\nab\nac\n\na\na\na\na\n\nb");
+        let solver = Day6::parse_input(input);
+        assert_eq!(solver.solve_part_two(), 6);
     }
 }
