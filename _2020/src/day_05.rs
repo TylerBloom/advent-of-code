@@ -44,7 +44,7 @@ impl Solution<u64> for Day5 {
             .iter()
             .trailing()
             .filter(|(&a, &b)| (a - b) == 2)
-            .map( |(a,_b)| a - 1 )
+            .map(|(a, _b)| a - 1)
             .collect::<Vec<u64>>()[0]
     }
 }

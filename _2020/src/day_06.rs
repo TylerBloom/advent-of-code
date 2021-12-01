@@ -65,4 +65,11 @@ mod tests {
         let solver = Day6::parse_input(input);
         assert_eq!(solver.solve_part_two(), 6);
     }
+
+    #[test]
+    fn test_part_three() {
+        let input = String::from("abcz\n\na\nb\nc\n\nab\nac\n\na\na\na\na\n\nb");
+        let solver = Day6::parse_input(input);
+        assert_eq!(solver.solve_part_two(), 7);
+    }
 }

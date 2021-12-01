@@ -7,6 +7,19 @@ where
     second: I,
 }
 
+impl<I> Trailing<I>
+where
+    I: Iterator + Clone,
+{
+    #[allow(dead_code)]
+    pub fn with_gap(mut self, count: usize ) -> Self {
+        for _ in 1..count {
+            self.first.next();
+        }
+        self
+    }
+}
+
 impl<I> Iterator for Trailing<I>
 where
     I: Iterator + Clone,
