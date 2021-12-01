@@ -2,12 +2,14 @@ mod day_1;
 mod day_2;
 mod day_3;
 mod day_4;
+mod day_5;
 mod solution;
 
 use day_1::Day1;
 use day_2::Day2;
 use day_3::Day3;
 use day_4::Day4;
+use day_5::Day5;
 use solution::Solution;
 
 use std::fs;
@@ -32,4 +34,8 @@ fn main() {
     let day_four = Day4::parse_input(load_datafile("day_4.txt"));
     println!("Day 4 Part 1 Solution: {} ", day_four.solve_part_one());
     println!("Day 4 Part 2 Solution: {} ", day_four.solve_part_two());
+
+    let day_five = Day5::parse_input(load_datafile("day_5.txt"));
+    println!("Day 5 Part 1 Solution: {} ", day_five.solve_part_one());
+    println!("Day 5 Part 2 Solution: {} ", day_five.solve_part_two());
 }

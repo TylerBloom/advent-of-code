@@ -6,9 +6,18 @@ use std::collections::HashMap;
 
 fn generate_parser() -> HashMap<String, Regex> {
     let mut digest: HashMap<String, Regex> = HashMap::with_capacity(7);
-    digest.insert(String::from("byr"), Regex::new(r"byr:([0-9]{4})( |\n|$)").unwrap());
-    digest.insert(String::from("iyr"), Regex::new(r"iyr:([0-9]{4})( |\n|$)").unwrap());
-    digest.insert(String::from("eyr"), Regex::new(r"eyr:([0-9]{4})( |\n|$)").unwrap());
+    digest.insert(
+        String::from("byr"),
+        Regex::new(r"byr:([0-9]{4})( |\n|$)").unwrap(),
+    );
+    digest.insert(
+        String::from("iyr"),
+        Regex::new(r"iyr:([0-9]{4})( |\n|$)").unwrap(),
+    );
+    digest.insert(
+        String::from("eyr"),
+        Regex::new(r"eyr:([0-9]{4})( |\n|$)").unwrap(),
+    );
     digest.insert(
         String::from("hgt"),
         Regex::new(r"hgt:([0-9]+)(in|cm)( |\n|$)").unwrap(),
@@ -21,7 +30,10 @@ fn generate_parser() -> HashMap<String, Regex> {
         String::from("ecl"),
         Regex::new(r"ecl:(amb|blu|brn|gry|grn|hzl|oth)( |\n|$)").unwrap(),
     );
-    digest.insert(String::from("pid"), Regex::new(r"pid:[0-9]{9}( |\n|$)").unwrap());
+    digest.insert(
+        String::from("pid"),
+        Regex::new(r"pid:[0-9]{9}( |\n|$)").unwrap(),
+    );
     //digest.insert(String::from("cid"), Regex::new(r"(|pid:[0-9]+)").unwrap());
     digest
 }
