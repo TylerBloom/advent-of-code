@@ -19,7 +19,6 @@ impl Day7 {
                 digest.append(&mut self.trace_bag(color.to_string()));
             }
         }
-        //println!( "{} => {:?}", bag, digest );
         digest
     }
 }
