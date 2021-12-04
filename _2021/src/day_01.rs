@@ -17,7 +17,7 @@ impl Solution<u32> for Day1 {
         Day1 { data }
     }
 
-    fn solve_part_one(&self) -> u32 {
+    fn solve_part_one(&mut self) -> u32 {
         self.data
             .iter()
             .trailing()
@@ -26,13 +26,13 @@ impl Solution<u32> for Day1 {
             .count() as u32
     }
 
-    fn solve_part_two(&self) -> u32 {
+    fn solve_part_two(&mut self) -> u32 {
         self.data
             .iter()
             .trailing()
             .trailing()
             .trailing()
-            .map(|(((a1,a2),(_a3,a4)), ((b1,b2),(_b3,b4)))| (a1 + a2 + a4) > (b1 + b2 + b4))
+            .map(|(((a1, a2), (_a3, a4)), ((b1, b2), (_b3, b4)))| (a1 + a2 + a4) > (b1 + b2 + b4))
             .filter(|b| *b)
             .count() as u32
     }
@@ -46,14 +46,14 @@ mod tests {
     #[test]
     fn test_part_one() {
         let input = String::from("199\n200\n208\n210\n200\n207\n240\n269\n260\n263");
-        let solver = Day1::parse_input(input);
+        let mut solver = Day1::parse_input(input);
         assert_eq!(solver.solve_part_one(), 7);
     }
 
     #[test]
     fn test_part_two() {
         let input = String::from("199\n200\n208\n210\n200\n207\n240\n269\n260\n263");
-        let solver = Day1::parse_input(input);
+        let mut solver = Day1::parse_input(input);
         assert_eq!(solver.solve_part_two(), 5);
     }
 }
