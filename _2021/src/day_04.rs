@@ -1,5 +1,7 @@
 pub use crate::solution::Solution;
 
+use std::collections::HashSet;
+
 struct Bingo {
     val_grid: Vec<Vec<u64>>,
     check_grid: Vec<Vec<bool>>,
@@ -115,7 +117,23 @@ impl Solution<u64> for Day4 {
     }
 
     fn solve_part_two(&mut self) -> u64 {
-        0
+        let mut digest: u64 = 0;
+        let mut winning_boards: HashSet<usize> = HashSet::with_capacity(self.data.len());
+        for num in &self.nums {
+            let mut index: usize = 0;
+            for bingo in &mut self.data {
+                if !winning_boards.contains(&index) {
+                    if let Some((i, j)) = bingo.add_val(*num) {
+                        if bingo.check_row(i) || bingo.check_col(j) {
+                            winning_boards.insert(index);
+                            digest = bingo.sum_unmarked() * num;
+                        }
+                    }
+                }
+                index += 1;
+            }
+        }
+        digest
     }
 }
 
@@ -135,6 +153,6 @@ mod tests {
     fn test_part_two() {
         let input = String::from("7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1\n\n22 13 17 11  0\n 8  2 23  4 24\n21  9 14 16  7\n 6 10  3 18  5\n 1 12 20 15 19\n\n 3 15  0  2 22\n 9 18 13 17  5\n19  8  7 25 23\n20 11 10 24  4\n14 21 16 12  6\n\n14 21 17 24  4\n10 16 15  9 19\n18  8 23 26 20\n22 11 13  6  5\n 2  0 12  3  7");
         let mut solver = Day4::parse_input(input);
-        assert_eq!(solver.solve_part_one(), 4512);
+        assert_eq!(solver.solve_part_two(), 1924);
     }
 }
