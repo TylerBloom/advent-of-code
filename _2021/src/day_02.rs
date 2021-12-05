@@ -1,5 +1,11 @@
 pub use crate::solution::Solution;
 
+pub fn run_solution(data: String) {
+    let mut solver = Day2::parse_input(data);
+    println!("Day 2 Part 1 Solution: {} ", solver.solve_part_one());
+    println!("Day 2 Part 2 Solution: {} ", solver.solve_part_two());
+}
+
 enum Direction {
     Forward,
     Up,
@@ -78,6 +84,8 @@ impl Solution<u64> for Day2 {
 
 #[cfg(test)]
 mod tests {
+    
+    use std::fs::read_to_string;
 
     use super::{Day2, Solution};
 
@@ -93,5 +101,18 @@ mod tests {
         let input = String::from("forward 5\ndown 5\nforward 8\nup 3\ndown 8\nforward 2");
         let mut solver = Day2::parse_input(input);
         assert_eq!(solver.solve_part_two(), 900);
+    }
+    
+    // Added after solution was accepted to ensure accuracy for refactoring
+    #[test]
+    fn known_part_one_solution() {
+        let mut solver = Day2::parse_input(read_to_string("data/day_02.txt").unwrap());
+        assert_eq!(solver.solve_part_one(), 1480518);
+    }
+
+    #[test]
+    fn known_part_two_solution() {
+        let mut solver = Day2::parse_input(read_to_string("data/day_02.txt").unwrap());
+        assert_eq!(solver.solve_part_two(), 1282809906);
     }
 }

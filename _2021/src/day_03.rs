@@ -2,6 +2,12 @@ pub use crate::solution::Solution;
 
 use std::collections::HashSet;
 
+pub fn run_solution(data: String) {
+    let mut solver = Day3::parse_input(data);
+    println!("Day 3 Part 1 Solution: {} ", solver.solve_part_one());
+    println!("Day 3 Part 2 Solution: {} ", solver.solve_part_two());
+}
+
 fn bools_to_int(vals: &Vec<bool>) -> u64 {
     vals.iter()
         .rev()
@@ -102,6 +108,8 @@ impl Solution<u64> for Day3 {
 
 #[cfg(test)]
 mod tests {
+    
+    use std::fs::read_to_string;
 
     use super::{Day3, Solution};
 
@@ -121,5 +129,18 @@ mod tests {
         );
         let mut solver = Day3::parse_input(input);
         assert_eq!(solver.solve_part_two(), 230);
+    }
+    
+    // Added after solution was accepted to ensure accuracy for refactoring
+    #[test]
+    fn known_part_one_solution() {
+        let mut solver = Day3::parse_input(read_to_string("data/day_03.txt").unwrap());
+        assert_eq!(solver.solve_part_one(), 4006064);
+    }
+
+    #[test]
+    fn known_part_two_solution() {
+        let mut solver = Day3::parse_input(read_to_string("data/day_03.txt").unwrap());
+        assert_eq!(solver.solve_part_two(), 5941884);
     }
 }
