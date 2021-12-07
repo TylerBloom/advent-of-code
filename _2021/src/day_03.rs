@@ -108,7 +108,7 @@ impl Solution<u64> for Day3 {
 
 #[cfg(test)]
 mod tests {
-    
+
     use std::fs::read_to_string;
 
     use super::{Day3, Solution};
@@ -130,7 +130,7 @@ mod tests {
         let mut solver = Day3::parse_input(input);
         assert_eq!(solver.solve_part_two(), 230);
     }
-    
+
     // Added after solution was accepted to ensure accuracy for refactoring
     #[test]
     fn known_part_one_solution() {

@@ -146,7 +146,7 @@ impl Solution<u64> for Day4 {
 
 #[cfg(test)]
 mod tests {
-    
+
     use std::fs::read_to_string;
 
     use super::{Day4, Solution};
@@ -164,14 +164,14 @@ mod tests {
         let mut solver = Day4::parse_input(input);
         assert_eq!(solver.solve_part_two(), 1924);
     }
-    
+
     // Added after solution was accepted to ensure accuracy for refactoring
     #[test]
     fn known_part_one_solution() {
         let mut solver = Day4::parse_input(read_to_string("data/day_04.txt").unwrap());
         assert_eq!(solver.solve_part_one(), 55770);
     }
-    
+
     #[test]
     fn known_part_two_solution() {
         let mut solver = Day4::parse_input(read_to_string("data/day_04.txt").unwrap());
