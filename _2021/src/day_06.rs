@@ -64,7 +64,22 @@ impl Solution<u64> for Day6 {
     }
 
     fn solve_part_two(&mut self) -> u64 {
-        0
+        let copy = self.data.clone();
+        let mut count: u64 = 0;
+        for _ in 0..256 {
+            for fish in &mut self.data {
+                if fish.next_day() {
+                    count += fish.count;
+                }
+            }
+            if count != 0 {
+                self.data.push( Fish { timer: 8, count } );
+                count = 0;
+            }
+        }
+        let digest = self.data.iter().map(|f| &f.count).sum();
+        self.data = copy;
+        digest
     }
 }
 
@@ -99,6 +114,6 @@ mod tests {
     #[test]
     fn known_part_two_solution() {
         let mut solver = Day6::parse_input(read_to_string("data/day_06.txt").unwrap());
-        //assert_eq!(solver.solve_part_two(), 20666);
+        assert_eq!(solver.solve_part_two(), 1632779838045);
     }
 }
