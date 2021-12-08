@@ -222,7 +222,7 @@ mod tests {
         assert_eq!(solver.solve_part_two(), 12);
     }
 
-    // These will be added after the correct solution for each are is found
+    // Added after solution was accepted to ensure accuracy for refactoring
     #[test]
     fn known_part_one_solution() {
         let mut solver = Day5::parse_input(read_to_string("data/day_05.txt").unwrap());
