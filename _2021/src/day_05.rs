@@ -2,9 +2,9 @@ pub use crate::solution::Solution;
 
 use num::integer;
 
-use std::ops::{Mul,Sub};
-use std::iter::Iterator;
 use std::collections::HashSet;
+use std::iter::Iterator;
+use std::ops::{Mul, Sub};
 
 pub fn run_solution(data: String) {
     let mut solver = Day5::parse_input(data);
@@ -12,7 +12,7 @@ pub fn run_solution(data: String) {
     println!("Day 5 Part 2 Solution: {} ", solver.solve_part_two());
 }
 
-#[derive(Debug,PartialEq,Eq,Hash,Clone,Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 struct Point {
     x: i64,
     y: i64,
@@ -26,21 +26,27 @@ struct Vector {
 impl Vector {
     // Treat this 2D vector like a 3D vector with a z-value of 0
     pub fn cross(&self, other: &Vector) -> f64 {
-        self.x*other.y - self.y*other.x
+        self.x * other.y - self.y * other.x
     }
 }
 
 impl Mul<i64> for &Point {
     type Output = Point;
     fn mul(self, rhs: i64) -> Point {
-        Point { x: rhs*self.x, y: rhs*self.y }
+        Point {
+            x: rhs * self.x,
+            y: rhs * self.y,
+        }
     }
 }
 
 impl Sub for &Point {
     type Output = Point;
     fn sub(self, rhs: &Point) -> Point {
-        Point { x: self.x - rhs.x, y: self.y - rhs.y }
+        Point {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+        }
     }
 }
 
@@ -51,14 +57,14 @@ impl Point {
         let y = iter.next().unwrap();
         Point { x, y }
     }
-    
+
     pub fn normalized(&self) -> Vector {
-        let length = ((self.x*self.x + self.y*self.y) as f64).sqrt();
+        let length = ((self.x * self.x + self.y * self.y) as f64).sqrt();
         if length == 0.0 {
             Vector { x: 0.0, y: 0.0 }
         } else {
-            let x = (self.x as f64)/length;
-            let y = (self.y as f64)/length;
+            let x = (self.x as f64) / length;
+            let y = (self.y as f64) / length;
             Vector { x, y }
         }
     }
@@ -86,13 +92,18 @@ impl Line {
         }
         let length: i64;
         if slope.x != 0 {
-            length = ((&p2 - &p1).x/slope.x).abs();
+            length = ((&p2 - &p1).x / slope.x).abs();
         } else {
-            length = ((&p2 - &p1).y/slope.y).abs();
+            length = ((&p2 - &p1).y / slope.y).abs();
         }
-        Line { p1, p2, slope, length }
+        Line {
+            p1,
+            p2,
+            slope,
+            length,
+        }
     }
-    
+
     fn contains_point(&self, point: &Point) -> bool {
         let mut digest = true;
         let diff = point - &self.p1;
@@ -102,20 +113,20 @@ impl Line {
         if self.slope.x == 0 {
             digest &= diff.x == 0;
         } else {
-            digest &= diff.x / self.slope.x <= self.length; 
+            digest &= diff.x / self.slope.x <= self.length;
             digest &= diff.x * self.slope.x >= 0;
             digest &= diff.x % self.slope.x == 0;
         }
         if self.slope.y == 0 {
             digest &= diff.y == 0;
         } else {
-            digest &= diff.y / self.slope.y <= self.length; 
+            digest &= diff.y / self.slope.y <= self.length;
             digest &= diff.y * self.slope.y >= 0;
             digest &= diff.y % self.slope.y == 0;
         }
         digest
     }
-    
+
     // We can use the right-hand rule for this.  By checking only the sign of
     // the cross product, we tell if the given line goes between this line.
     fn crosses(&self, line: &Line) -> bool {
@@ -127,13 +138,12 @@ impl Line {
         let prod_two = rel_vec_2.cross(&rel_vec_4);
         prod_one * prod_two <= 0.0
     }
-    
+
     fn is_parallel(&self, line: &Line) -> bool {
-        self.slope == line.slope
-            || &self.slope*-1 == line.slope
+        self.slope == line.slope || &self.slope * -1 == line.slope
     }
-    
-    pub fn add_intersecting_points( &self, line: &Line, points: &mut HashSet<Point> ) {
+
+    pub fn add_intersecting_points(&self, line: &Line, points: &mut HashSet<Point>) {
         if self.crosses(line) {
             let break_early = !self.is_parallel(line);
             let mut point = self.p1.clone();
@@ -152,7 +162,7 @@ impl Line {
             }
         }
     }
-    
+
     pub fn is_straight(&self) -> bool {
         self.slope.x == 0 || self.slope.y == 0
     }
@@ -176,11 +186,11 @@ impl Solution<u64> for Day5 {
 
     fn solve_part_one(&mut self) -> u64 {
         let mut digest: HashSet<Point> = HashSet::new();
-        for (i,line) in self.data.iter().enumerate() {
+        for (i, line) in self.data.iter().enumerate() {
             if !line.is_straight() {
                 continue;
             }
-            for l in self.data[i+1..].iter() {
+            for l in self.data[i + 1..].iter() {
                 if !l.is_straight() {
                     continue;
                 }
@@ -192,8 +202,8 @@ impl Solution<u64> for Day5 {
 
     fn solve_part_two(&mut self) -> u64 {
         let mut digest: HashSet<Point> = HashSet::new();
-        for (i,line) in self.data.iter().enumerate() {
-            for l in self.data[i+1..].iter() {
+        for (i, line) in self.data.iter().enumerate() {
+            for l in self.data[i + 1..].iter() {
                 line.add_intersecting_points(l, &mut digest);
             }
         }
