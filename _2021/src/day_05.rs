@@ -18,6 +18,18 @@ struct Point {
     y: i64,
 }
 
+struct Vector {
+    x: f64,
+    y: f64,
+}
+
+impl Vector {
+    // Treat this 2D vector like a 3D vector with a z-value of 0
+    pub fn cross(&self, other: &Vector) -> f64 {
+        self.x*other.y - self.y*other.x
+    }
+}
+
 impl Mul<i64> for &Point {
     type Output = Point;
     fn mul(self, rhs: i64) -> Point {
@@ -40,9 +52,15 @@ impl Point {
         Point { x, y }
     }
     
-    // Treat the point like a 3D-vector with a z-value of 0
-    pub fn cross(&self, other: &Point) -> i64 {
-        self.x*other.y - self.y*other.x
+    pub fn normalized(&self) -> Vector {
+        let length = ((self.x*self.x + self.y*self.y) as f64).sqrt();
+        if length == 0.0 {
+            Vector { x: 0.0, y: 0.0 }
+        } else {
+            let x = (self.x as f64)/length;
+            let y = (self.y as f64)/length;
+            Vector { x, y }
+        }
     }
 }
 
@@ -78,6 +96,9 @@ impl Line {
     fn contains_point(&self, point: &Point) -> bool {
         let mut digest = true;
         let diff = point - &self.p1;
+        if self.slope.x != 0 && self.slope.y != 0 {
+            digest &= diff.x / self.slope.x == diff.y / self.slope.y;
+        }
         if self.slope.x == 0 {
             digest &= diff.x == 0;
         } else {
@@ -95,18 +116,18 @@ impl Line {
         digest
     }
     
-    #[allow(dead_code)]
+    // We can use the right-hand rule for this.  By checking only the sign of
+    // the cross product, we tell if the given line goes between this line.
     fn crosses(&self, line: &Line) -> bool {
-        let rel_vec_1 = &line.p1 - &self.p1;
-        let rel_vec_2 = &line.p1 - &self.p2;
-        let rel_vec_3 = &line.p2 - &self.p1;
-        let rel_vec_4 = &line.p2 - &self.p2;
+        let rel_vec_1 = (&line.p1 - &self.p1).normalized();
+        let rel_vec_2 = (&line.p1 - &self.p2).normalized();
+        let rel_vec_3 = (&line.p2 - &self.p1).normalized();
+        let rel_vec_4 = (&line.p2 - &self.p2).normalized();
         let prod_one = rel_vec_1.cross(&rel_vec_3);
         let prod_two = rel_vec_2.cross(&rel_vec_4);
-        prod_one * prod_two <= 0
+        prod_one * prod_two <= 0.0
     }
     
-    #[allow(dead_code)]
     fn is_parallel(&self, line: &Line) -> bool {
         self.slope == line.slope
             || &self.slope*-1 == line.slope
@@ -116,24 +137,18 @@ impl Line {
         if self.crosses(line) {
             let break_early = !self.is_parallel(line);
             let mut point = self.p1.clone();
-            let mut count = 0;
             while point != self.p2 {
                 if line.contains_point(&point) {
                     points.insert(point);
                     if break_early {
                         break;
                     }
-                    count += 1;
                 }
                 point.x += self.slope.x;
                 point.y += self.slope.y;
             }
             if line.contains_point(&point) {
                 points.insert(point);
-                count += 1;
-            }
-            if count > 0 {
-                println!( "{:?} and \n{:?} cross at {} points\n", self, line, count );
             }
         }
     }
@@ -217,6 +232,6 @@ mod tests {
     #[test]
     fn known_part_two_solution() {
         let mut solver = Day5::parse_input(read_to_string("data/day_05.txt").unwrap());
-        //assert_eq!(solver.solve_part_two(), 20666);
+        assert_eq!(solver.solve_part_two(), 20666);
     }
 }
