@@ -2,6 +2,7 @@ pub use crate::solution::Solution;
 
 use num::integer;
 
+use std::ops::{Mul,Sub};
 use std::iter::Iterator;
 use std::collections::HashSet;
 
@@ -17,6 +18,20 @@ struct Point {
     y: i64,
 }
 
+impl Mul<i64> for &Point {
+    type Output = Point;
+    fn mul(self, rhs: i64) -> Point {
+        Point { x: rhs*self.x, y: rhs*self.y }
+    }
+}
+
+impl Sub for &Point {
+    type Output = Point;
+    fn sub(self, rhs: &Point) -> Point {
+        Point { x: self.x - rhs.x, y: self.y - rhs.y }
+    }
+}
+
 impl Point {
     pub fn new(data: &str) -> Self {
         let mut iter = data.split(",").map(|n| n.parse::<i64>().unwrap());
@@ -24,40 +39,107 @@ impl Point {
         let y = iter.next().unwrap();
         Point { x, y }
     }
+    
+    // Treat the point like a 3D-vector with a z-value of 0
+    pub fn cross(&self, other: &Point) -> i64 {
+        self.x*other.y - self.y*other.x
+    }
 }
 
+#[derive(Debug)]
 struct Line {
-    points: HashSet<Point>,
-    xs: HashSet<i64>,
-    ys: HashSet<i64>,
+    p1: Point,
+    p2: Point,
+    slope: Point,
+    length: i64,
 }
 
 impl Line {
     pub fn new(data: &str) -> Self {
         let parsed: Vec<&str> = data.split(" ").collect();
-        let mut p1 = Point::new(parsed[0]);
+        let p1 = Point::new(parsed[0]);
         let p2 = Point::new(parsed[2]);
-        let mut slope = Point { x: p2.x - p1.x, y: p2.y - p1.y };
+        let mut slope = &p2 - &p1;
         let mut gcd = integer::gcd(slope.x, slope.y);
         while gcd != 1 {
             slope.x /= gcd;
             slope.y /= gcd;
             gcd = integer::gcd(slope.x, slope.y);
         }
-        let mut points: HashSet<Point> = HashSet::new();
-        let mut xs: HashSet<i64> = HashSet::new();
-        let mut ys: HashSet<i64> = HashSet::new();
-        points.insert(p1);
-        xs.insert(p1.x);
-        ys.insert(p1.y);
-        while p1 != p2 {
-            p1.x += slope.x;
-            p1.y += slope.y;
-            points.insert(p1);
-            xs.insert(p1.x);
-            ys.insert(p1.y);
+        let length: i64;
+        if slope.x != 0 {
+            length = ((&p2 - &p1).x/slope.x).abs();
+        } else {
+            length = ((&p2 - &p1).y/slope.y).abs();
         }
-        Line { points, xs, ys }
+        Line { p1, p2, slope, length }
+    }
+    
+    fn contains_point(&self, point: &Point) -> bool {
+        let mut digest = true;
+        let diff = point - &self.p1;
+        if self.slope.x == 0 {
+            digest &= diff.x == 0;
+        } else {
+            digest &= diff.x / self.slope.x <= self.length; 
+            digest &= diff.x * self.slope.x >= 0;
+            digest &= diff.x % self.slope.x == 0;
+        }
+        if self.slope.y == 0 {
+            digest &= diff.y == 0;
+        } else {
+            digest &= diff.y / self.slope.y <= self.length; 
+            digest &= diff.y * self.slope.y >= 0;
+            digest &= diff.y % self.slope.y == 0;
+        }
+        digest
+    }
+    
+    #[allow(dead_code)]
+    fn crosses(&self, line: &Line) -> bool {
+        let rel_vec_1 = &line.p1 - &self.p1;
+        let rel_vec_2 = &line.p1 - &self.p2;
+        let rel_vec_3 = &line.p2 - &self.p1;
+        let rel_vec_4 = &line.p2 - &self.p2;
+        let prod_one = rel_vec_1.cross(&rel_vec_3);
+        let prod_two = rel_vec_2.cross(&rel_vec_4);
+        prod_one * prod_two <= 0
+    }
+    
+    #[allow(dead_code)]
+    fn is_parallel(&self, line: &Line) -> bool {
+        self.slope == line.slope
+            || &self.slope*-1 == line.slope
+    }
+    
+    pub fn add_intersecting_points( &self, line: &Line, points: &mut HashSet<Point> ) {
+        if self.crosses(line) {
+            let break_early = !self.is_parallel(line);
+            let mut point = self.p1.clone();
+            let mut count = 0;
+            while point != self.p2 {
+                if line.contains_point(&point) {
+                    points.insert(point);
+                    if break_early {
+                        break;
+                    }
+                    count += 1;
+                }
+                point.x += self.slope.x;
+                point.y += self.slope.y;
+            }
+            if line.contains_point(&point) {
+                points.insert(point);
+                count += 1;
+            }
+            if count > 0 {
+                println!( "{:?} and \n{:?} cross at {} points\n", self, line, count );
+            }
+        }
+    }
+    
+    pub fn is_straight(&self) -> bool {
+        self.slope.x == 0 || self.slope.y == 0
     }
 }
 
@@ -80,18 +162,14 @@ impl Solution<u64> for Day5 {
     fn solve_part_one(&mut self) -> u64 {
         let mut digest: HashSet<Point> = HashSet::new();
         for (i,line) in self.data.iter().enumerate() {
-            if line.xs.len() > 1 && line.ys.len() > 1 {
+            if !line.is_straight() {
                 continue;
             }
             for l in self.data[i+1..].iter() {
-                if l.xs.len() > 1 && l.ys.len() > 1 {
+                if !l.is_straight() {
                     continue;
                 }
-                for p in &line.points {
-                    if l.points.contains(&p) {
-                        digest.insert(*p);
-                    }
-                }
+                line.add_intersecting_points(l, &mut digest);
             }
         }
         digest.len() as u64
@@ -101,11 +179,7 @@ impl Solution<u64> for Day5 {
         let mut digest: HashSet<Point> = HashSet::new();
         for (i,line) in self.data.iter().enumerate() {
             for l in self.data[i+1..].iter() {
-                for p in &line.points {
-                    if l.points.contains(&p) {
-                        digest.insert(*p);
-                    }
-                }
+                line.add_intersecting_points(l, &mut digest);
             }
         }
         digest.len() as u64
@@ -115,7 +189,7 @@ impl Solution<u64> for Day5 {
 #[cfg(test)]
 mod tests {
 
-    //use std::fs::read_to_string;
+    use std::fs::read_to_string;
 
     use super::{Day5, Solution};
 
@@ -136,13 +210,13 @@ mod tests {
     // These will be added after the correct solution for each are is found
     #[test]
     fn known_part_one_solution() {
-        //let mut solver = Day5::parse_input(read_to_string("data/day_02.txt").unwrap());
-        //assert_eq!(solver.solve_part_one(), 1480518);
+        let mut solver = Day5::parse_input(read_to_string("data/day_05.txt").unwrap());
+        assert_eq!(solver.solve_part_one(), 6856);
     }
 
     #[test]
     fn known_part_two_solution() {
-        //let mut solver = Day5::parse_input(read_to_string("data/day_02.txt").unwrap());
-        //assert_eq!(solver.solve_part_two(), 1282809906);
+        let mut solver = Day5::parse_input(read_to_string("data/day_05.txt").unwrap());
+        //assert_eq!(solver.solve_part_two(), 20666);
     }
 }
