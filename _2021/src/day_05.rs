@@ -57,9 +57,12 @@ impl Point {
         let y = iter.next().unwrap();
         Point { x, y }
     }
-    
+
     pub fn as_vector(&self) -> Vector {
-        Vector { x: self.x as f64, y: self.y as f64 }
+        Vector {
+            x: self.x as f64,
+            y: self.y as f64,
+        }
     }
 
     pub fn normalized(&self) -> Vector {
@@ -146,25 +149,25 @@ impl Line {
     fn is_parallel(&self, line: &Line) -> bool {
         self.slope == line.slope || &self.slope * -1 == line.slope
     }
-    
+
     fn get_single_intersection(&self, line: &Line) -> Option<Point> {
         let mut dist: i64;
         if line.slope.x == 0 {
-            dist = (line.p1.x - self.p1.x)/self.slope.x;
+            dist = (line.p1.x - self.p1.x) / self.slope.x;
         } else if line.slope.y == 0 {
-            dist = (line.p1.y - self.p1.y)/self.slope.y;
+            dist = (line.p1.y - self.p1.y) / self.slope.y;
         } else {
             let v = (&self.p1 - &line.p1).as_vector();
             let s1 = self.slope.as_vector();
             let s2 = line.slope.as_vector();
-            dist = ( (v.x/s2.x - v.y/s2.y)/(s1.y/s2.y - s1.x/s2.x) ) as i64;
+            dist = ((v.x / s2.x - v.y / s2.y) / (s1.y / s2.y - s1.x / s2.x)) as i64;
         }
         dist *= -1;
-        let p = &self.p1 - &(&self.slope*dist);
+        let p = &self.p1 - &(&self.slope * dist);
         if self.contains_point(&p) && line.contains_point(&p) {
             Some(p)
         } else {
-            None 
+            None
         }
     }
 

@@ -17,16 +17,22 @@ pub struct Day7 {
 
 #[inline]
 fn triangle_num(n: u64) -> u64 {
-    (n*(n+1))/2
+    (n * (n + 1)) / 2
 }
 
 impl Day7 {
     fn get_shifted_count(&self, val: i64) -> u64 {
-        self.data.iter().map(|c| c.count*((c.position - val).abs() as u64)).sum()
+        self.data
+            .iter()
+            .map(|c| c.count * ((c.position - val).abs() as u64))
+            .sum()
     }
-    
+
     fn get_other_shifted_count(&self, val: i64) -> u64 {
-        self.data.iter().map(|c| c.count*triangle_num((c.position - val).abs() as u64)).sum()
+        self.data
+            .iter()
+            .map(|c| c.count * triangle_num((c.position - val).abs() as u64))
+            .sum()
     }
 }
 
@@ -40,11 +46,17 @@ impl Solution<u64> for Day7 {
             .collect();
         parsed.sort();
         let mut data: Vec<Capsule> = Vec::new();
-        let mut cap = Capsule { position: 0, count: 0 };
+        let mut cap = Capsule {
+            position: 0,
+            count: 0,
+        };
         for i in parsed {
             if i != cap.position {
                 data.push(cap);
-                cap = Capsule { position: i, count: 1 };
+                cap = Capsule {
+                    position: i,
+                    count: 1,
+                };
             } else {
                 cap.count += 1;
             }
