@@ -48,12 +48,13 @@ fn run_solver(num: u32) {
         6 => day_06::run_solution(data),
         7 => day_07::run_solution(data),
         8 => day_08::run_solution(data),
+        9 => day_09::run_solution(data),
         _ => panic!("No solution for {} is implemened.", num),
     }
 }
 
 fn main() {
-    for i in 1..9 {
+    for i in 1..10 {
         run_solver(i);
     }
 }

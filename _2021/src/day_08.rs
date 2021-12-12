@@ -19,94 +19,94 @@ impl SegmentMap {
     // Data needs to be stored by string length
     pub fn new(data: &Vec<HashSet<char>>) -> Self {
         let mut map = Vec::with_capacity(7);
-        map.push( ( data[0].clone(), 1 ) );
-        map.push( ( data[1].clone(), 7 ) );
-        map.push( ( data[2].clone(), 4 ) );
-        map.push( ( data[9].clone(), 8 ) );
+        map.push((data[0].clone(), 1));
+        map.push((data[1].clone(), 7));
+        map.push((data[2].clone(), 4));
+        map.push((data[9].clone(), 8));
 
-        map.push( ( data[SegmentMap::find_two(&data)].clone(), 2 ) );
-        map.push( ( data[SegmentMap::find_three(&data)].clone(), 3 ) );
-        map.push( ( data[SegmentMap::find_five(&data)].clone(), 5 ) );
+        map.push((data[SegmentMap::find_two(&data)].clone(), 2));
+        map.push((data[SegmentMap::find_three(&data)].clone(), 3));
+        map.push((data[SegmentMap::find_five(&data)].clone(), 5));
 
-        map.push( ( data[SegmentMap::find_zero(&data)].clone(), 0 ) );
-        map.push( ( data[SegmentMap::find_six(&data)].clone(), 6 ) );
-        map.push( ( data[SegmentMap::find_nine(&data)].clone(), 9 ) );
+        map.push((data[SegmentMap::find_zero(&data)].clone(), 0));
+        map.push((data[SegmentMap::find_six(&data)].clone(), 6));
+        map.push((data[SegmentMap::find_nine(&data)].clone(), 9));
         SegmentMap { map }
     }
-    
+
     fn find_three(data: &Vec<HashSet<char>>) -> usize {
         if data[0].intersection(&data[3]).collect::<Vec<_>>().len() == 2 {
             3
         } else if data[0].intersection(&data[4]).collect::<Vec<_>>().len() == 2 {
-            4 
+            4
         } else {
-            5 
+            5
         }
     }
-    
+
     fn find_two(data: &Vec<HashSet<char>>) -> usize {
         let index = SegmentMap::find_five(data);
         if data[index].intersection(&data[3]).collect::<Vec<_>>().len() == 3 {
             3
         } else if data[index].intersection(&data[4]).collect::<Vec<_>>().len() == 3 {
-            4 
+            4
         } else {
-            5 
+            5
         }
     }
-    
+
     fn find_five(data: &Vec<HashSet<char>>) -> usize {
         let index = SegmentMap::find_six(data);
         if data[index].intersection(&data[3]).collect::<Vec<_>>().len() == 5 {
             3
         } else if data[index].intersection(&data[4]).collect::<Vec<_>>().len() == 5 {
-            4 
+            4
         } else {
-            5 
+            5
         }
     }
-    
+
     fn find_zero(data: &Vec<HashSet<char>>) -> usize {
         let index = SegmentMap::find_five(data);
         if data[index].intersection(&data[6]).collect::<Vec<_>>().len() == 4 {
             6
         } else if data[index].intersection(&data[7]).collect::<Vec<_>>().len() == 4 {
-            7 
+            7
         } else {
             8
         }
     }
-    
+
     fn find_six(data: &Vec<HashSet<char>>) -> usize {
         if data[1].intersection(&data[6]).collect::<Vec<_>>().len() == 2 {
             6
         } else if data[1].intersection(&data[7]).collect::<Vec<_>>().len() == 2 {
-            7 
+            7
         } else {
             8
         }
     }
-    
+
     fn find_nine(data: &Vec<HashSet<char>>) -> usize {
         if data[2].intersection(&data[6]).collect::<Vec<_>>().len() == 4 {
             6
         } else if data[2].intersection(&data[7]).collect::<Vec<_>>().len() == 4 {
-            7 
+            7
         } else {
             8
         }
     }
-    
+
     pub fn map(&self, data: &HashSet<char>) -> u64 {
         let mut digest: u64 = u64::MAX;
-        for (s,v) in &self.map {
+        for (s, v) in &self.map {
             if s == data {
                 digest = v.clone();
                 break;
             }
         }
         if digest == u64::MAX {
-            panic!( "That shouldn't happen." );
+            panic!("That shouldn't happen.");
         }
         digest
     }
@@ -122,15 +122,15 @@ impl Solution<u64> for Day8 {
         let parsed: Vec<&str> = data.split("\n").collect();
         let mut input: Vec<Vec<HashSet<char>>> = Vec::with_capacity(parsed.len());
         let mut output: Vec<Vec<HashSet<char>>> = Vec::with_capacity(parsed.len());
-        for val in parsed.iter().filter(|v| !v.is_empty() ) {
+        for val in parsed.iter().filter(|v| !v.is_empty()) {
             for (i, entry) in val.split("|").filter(|e| !e.is_empty()).enumerate() {
                 let mut vals: Vec<HashSet<char>> = entry
-                        .split(" ")
-                        .filter(|num| !num.is_empty())
-                        .map(|num| num.chars().collect())
-                        .collect();
+                    .split(" ")
+                    .filter(|num| !num.is_empty())
+                    .map(|num| num.chars().collect())
+                    .collect();
                 if i == 0 {
-                    vals.sort_by( |a,b| a.len().partial_cmp(&b.len()).unwrap() );
+                    vals.sort_by(|a, b| a.len().partial_cmp(&b.len()).unwrap());
                     input.push(vals);
                 } else {
                     output.push(vals);
@@ -166,7 +166,7 @@ impl Solution<u64> for Day8 {
                     .rev()
                     .enumerate()
                     .map(|(i, n)| 10_u64.pow(i as u32) * n)
-                    .sum()
+                    .sum(),
             );
         }
         digest.iter().sum()
