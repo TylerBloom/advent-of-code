@@ -1,8 +1,6 @@
 pub use crate::solution::Solution;
 
-use std::collections::HashSet;
-
-// This is not my best work... I will like refactor this, but I disliked this question greatly.
+use std::collections::HashMap;
 
 pub fn run_solution(data: String) {
     let mut solver = Day8::parse_input(data);
@@ -12,127 +10,52 @@ pub fn run_solution(data: String) {
 
 #[derive(Debug)]
 struct SegmentMap {
-    map: Vec<(HashSet<char>, u64)>,
+    map: HashMap<String, u64>,
 }
 
 impl SegmentMap {
-    // Data needs to be stored by string length
-    pub fn new(data: &Vec<HashSet<char>>) -> Self {
-        let mut map = Vec::with_capacity(7);
-        map.push( ( data[0].clone(), 1 ) );
-        map.push( ( data[1].clone(), 7 ) );
-        map.push( ( data[2].clone(), 4 ) );
-        map.push( ( data[9].clone(), 8 ) );
-
-        map.push( ( data[SegmentMap::find_two(&data)].clone(), 2 ) );
-        map.push( ( data[SegmentMap::find_three(&data)].clone(), 3 ) );
-        map.push( ( data[SegmentMap::find_five(&data)].clone(), 5 ) );
-
-        map.push( ( data[SegmentMap::find_zero(&data)].clone(), 0 ) );
-        map.push( ( data[SegmentMap::find_six(&data)].clone(), 6 ) );
-        map.push( ( data[SegmentMap::find_nine(&data)].clone(), 9 ) );
+    pub fn new(data: &Vec<String>) -> Self {
+        let mut map = HashMap::with_capacity(7);
         SegmentMap { map }
     }
     
-    fn find_three(data: &Vec<HashSet<char>>) -> usize {
-        if data[0].intersection(&data[3]).collect::<Vec<_>>().len() == 2 {
-            3
-        } else if data[0].intersection(&data[4]).collect::<Vec<_>>().len() == 2 {
-            4 
-        } else {
-            5 
-        }
-    }
-    
-    fn find_two(data: &Vec<HashSet<char>>) -> usize {
-        let index = SegmentMap::find_five(data);
-        if data[index].intersection(&data[3]).collect::<Vec<_>>().len() == 3 {
-            3
-        } else if data[index].intersection(&data[4]).collect::<Vec<_>>().len() == 3 {
-            4 
-        } else {
-            5 
-        }
-    }
-    
-    fn find_five(data: &Vec<HashSet<char>>) -> usize {
-        let index = SegmentMap::find_six(data);
-        if data[index].intersection(&data[3]).collect::<Vec<_>>().len() == 5 {
-            3
-        } else if data[index].intersection(&data[4]).collect::<Vec<_>>().len() == 5 {
-            4 
-        } else {
-            5 
-        }
-    }
-    
-    fn find_zero(data: &Vec<HashSet<char>>) -> usize {
-        let index = SegmentMap::find_five(data);
-        if data[index].intersection(&data[6]).collect::<Vec<_>>().len() == 4 {
-            6
-        } else if data[index].intersection(&data[7]).collect::<Vec<_>>().len() == 4 {
-            7 
-        } else {
-            8
-        }
-    }
-    
-    fn find_six(data: &Vec<HashSet<char>>) -> usize {
-        if data[1].intersection(&data[6]).collect::<Vec<_>>().len() == 2 {
-            6
-        } else if data[1].intersection(&data[7]).collect::<Vec<_>>().len() == 2 {
-            7 
-        } else {
-            8
-        }
-    }
-    
-    fn find_nine(data: &Vec<HashSet<char>>) -> usize {
-        if data[2].intersection(&data[6]).collect::<Vec<_>>().len() == 4 {
-            6
-        } else if data[2].intersection(&data[7]).collect::<Vec<_>>().len() == 4 {
-            7 
-        } else {
-            8
-        }
-    }
-    
-    pub fn map(&self, data: &HashSet<char>) -> u64 {
-        let mut digest: u64 = u64::MAX;
-        for (s,v) in &self.map {
-            if s == data {
-                digest = v.clone();
-                break;
-            }
-        }
-        if digest == u64::MAX {
-            panic!( "That shouldn't happen." );
-        }
-        digest
+    pub fn map(&self, data: String) -> u64 {
+        self.map[data]
     }
 }
 
 pub struct Day8 {
-    input: Vec<Vec<HashSet<char>>>,
-    output: Vec<Vec<HashSet<char>>>,
+    input: Vec<Vec<String>>,
+    output: Vec<Vec<String>>,
 }
 
 impl Solution<u64> for Day8 {
     fn parse_input(data: String) -> Self {
         let parsed: Vec<&str> = data.split("\n").collect();
-        let mut input: Vec<Vec<HashSet<char>>> = Vec::with_capacity(parsed.len());
-        let mut output: Vec<Vec<HashSet<char>>> = Vec::with_capacity(parsed.len());
-        for val in parsed.iter().filter(|v| !v.is_empty() ) {
-            for (i, entry) in val.split("|").filter(|e| !e.is_empty()).enumerate() {
-                let mut vals: Vec<HashSet<char>> = entry
+        let mut input: Vec<Vec<String>> = Vec::with_capacity(parsed.len());
+        let mut output: Vec<Vec<String>> = Vec::with_capacity(parsed.len());
+        for val in parsed {
+            if val.is_empty() {
+                continue;
+            }
+            for (i, entry) in val.split("|").enumerate() {
+                if entry.is_empty() {
+                    continue;
+                }
+                if i == 0 {
+                    let mut sorted_entries: Vec<String> = Vec::new();
+                    for v in entry.split(" ").filter(|num| !num.is_empty()) {
+                        let mut num = v.chars().collect::<Vec<_>>();
+                        num.sort();
+                        sorted_entries.push( num.iter().collect::<String>() );
+                    }
+                    input.push(sorted_entries);
+                } else {
+                    let vals = entry
                         .split(" ")
                         .filter(|num| !num.is_empty())
-                        .map(|num| num.chars().collect())
-                        .collect();
-                if i == 0 {
-                    vals.sort_by( |a,b| a.len().partial_cmp(&b.len()).unwrap() );
-                    input.push(vals);
-                } else {
+                        .map(|num| num.to_string())
+                        .collect::<Vec<_>>();
                     output.push(vals);
                 }
             }
@@ -158,15 +81,31 @@ impl Solution<u64> for Day8 {
         let mut digest: Vec<u64> = Vec::with_capacity(self.input.len());
         let mut map: SegmentMap;
         for (i, entry) in self.input.iter().enumerate() {
-            map = SegmentMap::new(&entry);
+            map = entry
+                .iter()
+                .map(|val| match val.len() {
+                    2 => SegmentMap::construct_one(&val),
+                    3 => SegmentMap::construct_seven(&val),
+                    4 => SegmentMap::construct_four(&val),
+                    7 => SegmentMap::construct_eight(&val),
+                    _ => SegmentMap::new(),
+                })
+                .reduce(|a, b| a.compose(&b))
+                .unwrap();
+            if map.len() != 7 {
+                panic!("{:?} found unknowable entry.", entry);
+            } else {
+                println!( "Final map: {:?}", map);
+            }
+            println!( "Mapping {:?}", self.output[i] );
             digest.push(
                 self.output[i]
                     .iter()
-                    .map(|e| map.map(e))
+                    .map(|e| segment_to_number(&map.map(e)))
                     .rev()
                     .enumerate()
                     .map(|(i, n)| 10_u64.pow(i as u32) * n)
-                    .sum()
+                    .sum(),
             );
         }
         digest.iter().sum()
@@ -203,7 +142,7 @@ mod tests {
         assert_eq!(solver.solve_part_two(), 61229);
     }
 
-    // Added after solution was accepted to ensure accuracy for refactoring
+    // Will be added after solution is found
     #[test]
     fn known_part_one_solution() {
         let mut solver = Day8::parse_input(read_to_string("data/day_08.txt").unwrap());
@@ -213,6 +152,6 @@ mod tests {
     #[test]
     fn known_part_two_solution() {
         let mut solver = Day8::parse_input(read_to_string("data/day_08.txt").unwrap());
-        assert_eq!(solver.solve_part_two(), 936117);
+        //assert_eq!(solver.solve_part_two(), 99634572);
     }
 }
