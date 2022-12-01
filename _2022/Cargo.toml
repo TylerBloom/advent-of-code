@@ -1,0 +1,12 @@
+[package]
+name = "aoc-2022"
+version = "0.1.0"
+edition = "2021"
+authors = ["TylerBloom <tylerbloom2222@gmail.com>"]
+
+[[bin]]
+name = "problem01"
+path = "src/problem01.rs"
+required-features = []
+
+[dependencies]
