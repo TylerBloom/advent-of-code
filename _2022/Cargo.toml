@@ -9,4 +9,9 @@ name = "problem01"
 path = "src/problem01.rs"
 required-features = []
 
+[[bin]]
+name = "problem02"
+path = "src/problem02.rs"
+required-features = []
+
 [dependencies]
