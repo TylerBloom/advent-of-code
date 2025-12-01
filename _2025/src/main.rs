@@ -12,7 +12,7 @@ fn main() {
         .and_then(|arg| arg.parse::<usize>().ok())
         .expect("First argument must be a number between 1 and 12")
     {
-        1 => day_one::problem_a(),
+        1 => day_one::DayOne::run(args.next()),
         2 => todo!("Day 2 is not impl-ed yet"),
         3 => todo!("Day 3 is not impl-ed yet"),
         4 => todo!("Day 4 is not impl-ed yet"),
@@ -28,4 +28,17 @@ fn main() {
             "There are only a dozen puzzles this year. Please enter a number between 1 and 12"
         ),
     }
+}
+
+pub trait Problem {
+    fn run(problem: Option<String>) {
+        match problem.as_deref() {
+            Some("A" | "a") => Self::problem_a(),
+            Some("B" | "b") => Self::problem_b(),
+            _ => panic!("Second argument must be either A or B"),
+        }
+    }
+
+    fn problem_a();
+    fn problem_b();
 }
