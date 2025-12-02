@@ -1,4 +1,5 @@
 mod day_one;
+mod day_two;
 
 fn main() {
     let mut args = std::env::args();
@@ -13,7 +14,7 @@ fn main() {
         .expect("First argument must be a number between 1 and 12")
     {
         1 => day_one::DayOne::run(args.next()),
-        2 => todo!("Day 2 is not impl-ed yet"),
+        2 => day_two::DayTwo::run(args.next()),
         3 => todo!("Day 3 is not impl-ed yet"),
         4 => todo!("Day 4 is not impl-ed yet"),
         5 => todo!("Day 5 is not impl-ed yet"),
