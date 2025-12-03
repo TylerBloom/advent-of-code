@@ -1,5 +1,3 @@
-use std::cmp::Ordering;
-
 use crate::Problem;
 
 pub struct DayThree;
@@ -19,10 +17,6 @@ impl Problem for DayThree {
 }
 
 fn problem_a(input: &str) -> usize {
-    fn cmp_chars(&(a, b): &(char, char), &(c, d): &(char, char)) -> Ordering {
-        a.cmp(&c).then(b.cmp(&d))
-    }
-
     input
         .lines()
         .map(|line| {
@@ -30,8 +24,8 @@ fn problem_a(input: &str) -> usize {
             line.chars()
                 .take(len - 1)
                 .enumerate()
-                .flat_map(|(i, c)| line.chars().skip(i + 1).map(move |cc| (c, cc)))
-                .max_by(cmp_chars)
+                .max_by(|a, b| a.1.cmp(&b.1))
+                .map(|(i, c)| (c, line.chars().skip(i + 1).max().unwrap()))
                 .map(|(a, b)| format!("{a}{b}").parse::<usize>().unwrap())
                 .unwrap()
         })
