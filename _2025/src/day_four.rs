@@ -16,18 +16,18 @@ impl Problem for DayFour {
     }
 }
 
-fn problem_a(input: &str) -> usize {
-    const ADJS: [(isize, isize); 8] = [
-        (-1, -1),
-        (-1, 0),
-        (-1, 1),
-        (1, -1),
-        (1, 0),
-        (1, 1),
-        (0, -1),
-        (0, 1),
-    ];
+const ADJS: [(isize, isize); 8] = [
+    (-1, -1),
+    (-1, 0),
+    (-1, 1),
+    (1, -1),
+    (1, 0),
+    (1, 1),
+    (0, -1),
+    (0, 1),
+];
 
+fn problem_a(input: &str) -> usize {
     let input: Vec<Vec<bool>> = input
         .lines()
         .map(|line| line.chars().map(|c| c == '@').collect())
@@ -67,8 +67,51 @@ fn problem_a(input: &str) -> usize {
     digest
 }
 
-fn problem_b(_input: &str) -> usize {
-    todo!()
+fn problem_b(input: &str) -> usize {
+    let mut input: Vec<Vec<bool>> = input
+        .lines()
+        .map(|line| line.chars().map(|c| c == '@').collect())
+        .collect();
+
+    let mut digest = 0;
+    loop {
+        let prior_input = input.clone();
+        let prior = digest;
+        // Find all the indices of the rolls of paper
+        let iter = input.iter_mut().enumerate().flat_map(|(col, line)| {
+            line.iter_mut()
+                .enumerate()
+                .filter_map(move |(row, item)| item.then_some((item, col, row)))
+        });
+
+        for (item, col, row) in iter {
+            let mut count = 0;
+            for offset in ADJS {
+                let Some(col) = col.checked_add_signed(offset.0) else {
+                    continue;
+                };
+                let Some(r) = prior_input.get(col) else {
+                    continue;
+                };
+                let Some(row) = row.checked_add_signed(offset.1) else {
+                    continue;
+                };
+                let Some(value) = r.get(row) else {
+                    continue;
+                };
+                count += (*value) as usize;
+            }
+
+            if count < 4 {
+                *item = false;
+                digest += 1;
+            }
+        }
+        if prior == digest {
+            break
+        }
+    }
+    digest
 }
 
 #[cfg(test)]
@@ -93,6 +136,6 @@ mod tests {
 
     #[test]
     fn test_problem_b_example() {
-        assert_eq!(problem_b(INPUT), 4174379265)
+        assert_eq!(problem_b(INPUT), 43)
     }
 }
