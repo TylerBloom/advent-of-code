@@ -16,13 +16,6 @@ impl Problem for DayFour {
     }
 }
 
-fn checked_add(index: usize, offset: isize) -> Option<usize> {
-    match offset {
-        isize::MIN..0 => index.checked_sub(offset.unsigned_abs()),
-        _ => index.checked_add(offset as usize),
-    }
-}
-
 fn problem_a(input: &str) -> usize {
     const ADJS: [(isize, isize); 8] = [
         (-1, -1),
@@ -51,13 +44,13 @@ fn problem_a(input: &str) -> usize {
     for (col, row) in iter {
         let mut count = 0;
         for offset in ADJS {
-            let Some(col) = checked_add(col, offset.0) else {
+            let Some(col) = col.checked_add_signed(offset.0) else {
                 continue;
             };
             let Some(r) = input.get(col) else {
                 continue;
             };
-            let Some(row) = checked_add(row, offset.1) else {
+            let Some(row) = row.checked_add_signed(offset.1) else {
                 continue;
             };
             let Some(value) = r.get(row) else {
