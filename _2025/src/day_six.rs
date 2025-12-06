@@ -16,12 +16,12 @@ impl Problem for DaySix {
     }
 }
 
-fn problem_a(input: &str) -> usize {
-    enum Op {
-        Add,
-        Mult,
-    }
+enum Op {
+    Add,
+    Mult,
+}
 
+fn problem_a(input: &str) -> usize {
     let mut lines = input.lines();
     let mut symbols: Vec<_> = lines
         .next_back()
@@ -47,8 +47,49 @@ fn problem_a(input: &str) -> usize {
     symbols.iter().map(|(_, num)| num).sum()
 }
 
-fn problem_b(_input: &str) -> usize {
-    todo!()
+fn problem_b(input: &str) -> usize {
+    let mut lines = input.lines();
+    let mut symbols: Vec<_> = lines
+        .next_back()
+        .unwrap()
+        .split_whitespace()
+        .map(|sy| match sy {
+            "+" => (Op::Add, 0),
+            _ => (Op::Mult, 1),
+        })
+        .collect();
+
+    let mut lines: Vec<_> = lines.map(|line| line.chars()).collect();
+
+    let mut index = 0;
+    loop {
+        let mut str_buffer = String::new();
+        let mut null_count = 0;
+        for line in lines.iter_mut() {
+            let Some(c) = line.next() else {
+                null_count += 1;
+                continue;
+            };
+            if c == ' ' {
+                continue;
+            } else {
+                str_buffer.push(c);
+            }
+        }
+        if str_buffer.is_empty() {
+            if null_count == lines.len() {
+                break
+            }
+            index += 1;
+        } else {
+            let num = str_buffer.parse::<usize>().unwrap();
+            match &mut symbols[index] {
+                (Op::Add, val) => *val += num,
+                (Op::Mult, val) => *val *= num,
+            }
+        }
+    }
+    symbols.iter().map(|(_, num)| num).sum()
 }
 
 #[cfg(test)]
@@ -67,6 +108,6 @@ mod tests {
 
     #[test]
     fn test_problem_b_example() {
-        assert_eq!(problem_b(INPUT), 14)
+        assert_eq!(problem_b(INPUT), 3263827)
     }
 }
