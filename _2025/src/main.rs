@@ -1,8 +1,9 @@
-mod day_one;
-mod day_two;
-mod day_three;
-mod day_four;
 mod day_five;
+mod day_four;
+mod day_one;
+mod day_six;
+mod day_three;
+mod day_two;
 
 fn main() {
     let mut args = std::env::args();
@@ -21,7 +22,7 @@ fn main() {
         3 => day_three::DayThree::run(args.next()),
         4 => day_four::DayFour::run(args.next()),
         5 => day_five::DayFive::run(args.next()),
-        6 => todo!("Day 6 is not impl-ed yet"),
+        6 => day_six::DaySix::run(args.next()),
         7 => todo!("Day 7 is not impl-ed yet"),
         8 => todo!("Day 8 is not impl-ed yet"),
         9 => todo!("Day 9 is not impl-ed yet"),
