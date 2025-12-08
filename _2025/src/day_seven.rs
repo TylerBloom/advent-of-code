@@ -67,11 +67,6 @@ fn problem_a(input: &str) -> usize {
     count
 }
 
-// Stat: Start at the bottom, and find the number of paths to each position.
-// fn problem_b(input: &str) -> usize {
-//    0
-// }
-
 fn problem_b(input: &str) -> usize {
     fn explore_paths<'a: 'b, 'b>(
         cache: &'b mut HashMap<State<'a>, usize>,
@@ -96,8 +91,6 @@ fn problem_b(input: &str) -> usize {
                 digest
             }
             '^' => {
-                // Splitters are always followed by an row of empty spaces.
-                lines.next();
                 let mut count = 0;
                 if let Some(prior) = index.checked_sub(1) {
                     count += explore_paths(cache, prior, lines.clone());
