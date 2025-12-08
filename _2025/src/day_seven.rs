@@ -19,52 +19,34 @@ impl Problem for DaySeven {
 }
 
 fn problem_a(input: &str) -> usize {
-    let mut input = input.as_bytes().to_owned();
-    let mut lines = input
-        .split_mut(|c| *c == b'\n')
-        .filter(|line| !line.is_empty());
+    let mut lines = input.lines();
+
     let start_index = lines
         .next()
         .unwrap()
-        .iter()
+        .chars()
         .enumerate()
-        .find_map(|(i, c)| (*c == b'S').then_some(i))
+        .find_map(|(i, c)| (c == 'S').then_some(i))
         .unwrap();
-    let mut indices = vec![start_index; 1];
 
-    let mut count = 0;
-    for line in lines {
-        for index in std::mem::take(&mut indices) {
-            let c: u8 = line[index];
-            match c {
-                b'.' => {
-                    line[index] = b'|';
-                    indices.push(index);
-                }
-                b'^' => {
-                    let mut tmp = 0;
-                    if let Some(prior) = index.checked_sub(1) {
-                        line[prior] = b'|';
-                        indices.push(prior);
-                        tmp += 1;
+    lines
+        .fold((0, vec![start_index; 1]), |(mut count, indices), line| {
+            let indices = line
+                .chars()
+                .enumerate()
+                .filter(|(i, _)| indices.contains(i))
+                .flat_map(|(i, c)| match c {
+                    '.' => [Some(i), None].into_iter().flatten(),
+                    '^' => {
+                        count += 1;
+                        [Some(i - 1), Some(i + 1)].into_iter().flatten()
                     }
-                    let next = index + 1;
-                    if line[next] != b'\n' {
-                        line[next] = b'|';
-                        indices.push(next);
-                        tmp += 1;
-                    }
-                    if tmp > 0 {
-                        count += 1
-                    }
-                }
-                // Ignore (includes newlines)
-                _ => {}
-            }
-        }
-    }
-
-    count
+                    c => panic!("Found unknown char {c:?} in line {line:?}"),
+                })
+                .collect();
+            (count, indices)
+        })
+        .0
 }
 
 fn problem_b(input: &str) -> usize {
@@ -81,7 +63,7 @@ fn problem_b(input: &str) -> usize {
             lines: lines.clone(),
         };
         if let Some(count) = cache.get(&state) {
-            return *count
+            return *count;
         }
 
         match line.chars().nth(index).unwrap() {
@@ -134,18 +116,22 @@ impl Hash for State<'_> {
 impl PartialEq for State<'_> {
     fn eq(&self, other: &Self) -> bool {
         if self.index != other.index {
-            return false
+            return false;
         }
         let mut this = self.lines.clone();
         let mut other = other.lines.clone();
-        if !this.by_ref().zip(other.by_ref()).all(|(this, other)| this == other) {
-            return false
+        if !this
+            .by_ref()
+            .zip(other.by_ref())
+            .all(|(this, other)| this == other)
+        {
+            return false;
         }
         this.next().is_none() && other.next().is_none()
     }
 }
 
-impl Eq for State<'_> { }
+impl Eq for State<'_> {}
 
 #[cfg(test)]
 mod tests {
