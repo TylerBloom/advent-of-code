@@ -1,5 +1,6 @@
 mod day_eight;
 mod day_five;
+mod day_nine;
 mod day_four;
 mod day_one;
 mod day_seven;
@@ -27,7 +28,7 @@ fn main() {
         6 => day_six::DaySix::run(args.next()),
         7 => day_seven::DaySeven::run(args.next()),
         8 => day_eight::DayEight::run(args.next()),
-        9 => todo!("Day 9 is not impl-ed yet"),
+        9 => day_nine::DayNine::run(args.next()),
         10 => todo!("Day 10 is not impl-ed yet"),
         11 => todo!("Day 11 is not impl-ed yet"),
         12 => todo!("Day 12 is not impl-ed yet"),
